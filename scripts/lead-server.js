@@ -1,12 +1,12 @@
 import http from "node:http";
-import { metadata, robots, sitemap } from "./scripts/metadata.js";
+import { metadata, robots, sitemap } from "./metadata.js";
 import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { services } from "./site.config.js";
-import { renderSite } from "./scripts/render-site.js";
+import { services } from "../site.config.js";
+import { renderSite } from "./render-site.js";
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const serviceNames = new Set([
   ...services.map((service) => service.title),
   "Not sure yet",
@@ -108,7 +108,10 @@ export function createApp({
     );
     try {
       const requestUrl = new URL(req.url, "http://localhost");
-      if (requestUrl.pathname === "/api/config" && req.method === "GET")
+      if (
+        ["/api/config", "/api/config.json"].includes(requestUrl.pathname) &&
+        req.method === "GET"
+      )
         return sendJSON(res, 200, { estimatesEnabled });
       if (requestUrl.pathname === "/api/estimates") {
         if (req.method !== "POST") {

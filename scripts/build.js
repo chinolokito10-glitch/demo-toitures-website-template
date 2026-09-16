@@ -1,10 +1,16 @@
-import { mkdir, copyFile, readdir, writeFile } from "node:fs/promises";
+import { mkdir, copyFile, readdir, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderSite } from "./render-site.js";
 import { metadata, robots, sitemap } from "./metadata.js";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+await rm(path.join(root, "dist"), { recursive: true, force: true });
 await mkdir(path.join(root, "dist/assets"), { recursive: true });
+await mkdir(path.join(root, "dist/api"), { recursive: true });
+await writeFile(
+  path.join(root, "dist/api/config.json"),
+  JSON.stringify({ estimatesEnabled: false }),
+);
 const origin = process.env.PUBLIC_ORIGIN || "";
 const html = renderSite();
 await writeFile(path.join(root, "index.html"), html);

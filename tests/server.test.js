@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createApp, validateEstimate } from "../server.js";
+import { createApp, validateEstimate } from "../scripts/lead-server.js";
 
 const valid = {
   name: "Test Homeowner",

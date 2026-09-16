@@ -141,7 +141,7 @@ document.querySelectorAll("[data-legal]").forEach((button) =>
 );
 let enabled = false;
 try {
-  const response = await fetch("/api/config");
+  const response = await fetch("/api/config.json");
   if (response.ok) enabled = (await response.json()).estimatesEnabled === true;
 } catch {}
 const status = document.querySelector("#form-status");

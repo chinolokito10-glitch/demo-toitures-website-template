@@ -5,10 +5,11 @@ Refonte française centrée sur les dossiers de chantier et les informations vé
 ## Localhost
 
 ```sh
+npm install
 npm run dev
 ```
 
-Ouvrir http://localhost:3000. Après modification de `site.config.js`, redémarrer le serveur. Il génère le HTML à partir des données; le build statique utilise le même rendu.
+Ouvrir http://localhost:3000. La commande construit le site puis sert uniquement `dist/`. Après modification des sources, relancer `npm run dev`. Pour vérifier un build existant : `npm start`.
 
 ## Renseigner l’entreprise
 
@@ -32,7 +33,18 @@ npm run test:browser
 
 `dist/` contient le site statique. Les tests vérifient le backend, la séparation entre données manquantes et preuves confirmées, le téléphone, le rendu de dossiers réels, le SEO, cinq tailles d’écran, l’accessibilité et le téléchargement d’une demande non envoyée.
 
-## Réception des demandes
+## Déploiement Vercel statique
+
+`vercel.json` impose le preset **Other** (`framework: null`), la commande **npm run build** et le dossier **dist**. La racine du projet Vercel doit être la racine de ce dépôt. Le point d’entrée publié est `dist/index.html`; aucune fonction Node n’est nécessaire. Ne pas configurer de redirection vers `server.js` ou `server.mjs`.
+
+Le build contient le HTML, les styles, les modules navigateur, les images et `api/config.json`. Ce fichier indique que les demandes sont en mode démonstration : validation et téléchargement fonctionnent sans serveur ni appel à un destinataire. Les menus, FAQ, galeries et boutons d’appel restent gérés dans le navigateur.
+
+Les tests navigateur servent le dossier de production avec un serveur de fichiers statiques, sans utiliser le serveur de demandes optionnel.
+
+## Réception des demandes (hébergement Node optionnel)
+
+Cette intégration est conservée dans `scripts/lead-server.js` pour un futur site connecté. Elle n’est ni construite ni exécutée par Vercel. Pour l’utiliser sur un hébergement Node : `npm run start:leads`.
+
 
 Variables serveur, décrites dans `.env.example` :
 
@@ -41,7 +53,7 @@ Variables serveur, décrites dans `.env.example` :
 - `PUBLIC_ORIGIN` : domaine public HTTPS réel.
 - `PORT` : 3000 par défaut.
 
-Exemple de démarrage avec variables privées : `node --env-file=.env server.js`.
+Exemple de démarrage avec variables privées : `node --env-file=.env scripts/lead-server.js`.
 
 L’interface ne confirme l’envoi qu’après acceptation du destinataire. Sans configuration, elle propose une copie téléchargeable et ne simule aucun envoi. Le serveur protège les fichiers privés par une liste explicite des fichiers publics autorisés.
 

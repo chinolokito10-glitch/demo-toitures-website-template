@@ -1,8 +1,17 @@
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import assert from "node:assert/strict";
-import { createApp } from "../server.js";
-const server = createApp();
+import { createServer } from "node:http";
+import { createRequire } from "node:module";
+import path from "node:path";
+const require = createRequire(import.meta.url);
+const handler = require("serve-handler");
+const server = createServer((request, response) =>
+  handler(request, response, {
+    public: path.resolve("dist"),
+    directoryListing: false,
+  }),
+);
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const browser = await chromium.launch({
   headless: true,
@@ -16,6 +25,10 @@ try {
     });
     const page = await context.newPage();
     const errors = [];
+    const failedResponses = [];
+    page.on("response", (response) => {
+      if (response.status() >= 400) failedResponses.push(response.url());
+    });
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(`http://127.0.0.1:${server.address().port}`, {
       waitUntil: "networkidle",
@@ -99,6 +112,11 @@ try {
       fullPage: true,
     });
     assert.deepEqual(errors, []);
+    assert.deepEqual(
+      failedResponses,
+      [],
+      "Production assets and demo config must load without HTTP errors",
+    );
     console.log(
       `Passed layout and interactions: ${width}px; page height ${await page.evaluate(() => document.body.scrollHeight)}px`,
     );

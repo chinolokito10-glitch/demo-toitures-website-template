@@ -80,4 +80,4 @@ Définir `PUBLIC_ORIGIN` avec le domaine HTTPS réel. Le site reste non indexabl
 
 Configurer `LEAD_WEBHOOK_URL` (HTTPS) et éventuellement `LEAD_WEBHOOK_TOKEN` sur le serveur, jamais dans ce fichier public. Vérifier la réception réelle dans la boîte courriel ou le CRM. Sans destinataire configuré, le formulaire indique que la demande n’est pas envoyée et propose une copie téléchargeable.
 
-Après modification : `npm run build`, puis redémarrer `npm run dev`. Pour une publication statique, déployer `dist/` et prévoir un backend compatible pour les demandes.
+Après modification : `npm run build`, puis relancer `npm run dev`. Sur Vercel, `vercel.json` publie `dist/` sans fonction serveur. Les demandes restent en mode démonstration avec téléchargement. Une réception réelle nécessite un backend compatible, hébergé séparément.
